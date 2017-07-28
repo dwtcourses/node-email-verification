@@ -359,9 +359,6 @@ module.exports = function(mongoose) {
             // temp user is found (i.e. user accessed URL before their data expired)
             if (tempUserData) {
                 // var userData = JSON.parse(JSON.stringify(tempUserData)), 
-                var userData = {},
-                    User = options.persistentUserModel,
-                    user;
                 
                 var persistentUserQuery = {};
                 persistentUserQuery[options.emailFieldName] = tempUserData[options.emailFieldName];
@@ -379,7 +376,10 @@ module.exports = function(mongoose) {
                             return callback(null, existingPersistentUser);
                         });
                     } else {
-                        
+                        var userData = {},
+                            User = options.persistentUserModel,
+                            user;
+                        console.log(userData);
                         for (var property in tempUserData) userData[property] = tempUserData[property];
                         delete userData[options.URLFieldName];
                         delete userData["_id"];

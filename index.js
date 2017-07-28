@@ -378,10 +378,9 @@ module.exports = function(mongoose) {
                             return callback(null, existingPersistentUser);
                         });
                     } else {
-                        console.log(userData);
-                        for (var property in tempUserData) userData[property] = tempUserData[property];
+                        for (var property in tempUserData.toJSON()) userData[property] = tempUserData[property];
+                        
                         delete userData[options.URLFieldName];
-                        delete userData["_id"];
                         user = new User(userData);
 
                         // save the temporary user to the persistent user collection

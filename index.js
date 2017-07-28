@@ -362,9 +362,7 @@ module.exports = function(mongoose) {
                 var userData = {},
                     User = options.persistentUserModel,
                     user;
-
-                for (var property in tempUserData) userData[property] = tempUserData[property];
-
+                
                 var persistentUserQuery = {};
                 persistentUserQuery[options.emailFieldName] = tempUserData[options.emailFieldName];
                 User.findOne(query, function(err, existingPersistentUser) {
@@ -381,7 +379,10 @@ module.exports = function(mongoose) {
                             return callback(null, existingPersistentUser);
                         });
                     } else {
+                        
+                        for (var property in tempUserData) userData[property] = tempUserData[property];
                         delete userData[options.URLFieldName];
+                        delete userData["_id"];
                         user = new User(userData);
 
                         // save the temporary user to the persistent user collection

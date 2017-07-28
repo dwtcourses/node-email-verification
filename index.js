@@ -365,7 +365,7 @@ module.exports = function(mongoose) {
                 
                 var persistentUserQuery = {};
                 persistentUserQuery[options.emailFieldName] = tempUserData[options.emailFieldName];
-                User.findOne(query, function(err, existingPersistentUser) {
+                User.findOne(persistentUserQuery, function(err, existingPersistentUser) {
                     if (err) {
                         return callback(err, null, null);
                     }

@@ -365,27 +365,44 @@ module.exports = function(mongoose) {
 
                 for (var property in tempUserData) userData[property] = tempUserData[property];
 
-                delete userData[options.URLFieldName];
-                user = new User(userData);
-
-                // save the temporary user to the persistent user collection
-                user.save(function(err, savedUser) {
+                var persistentUserQuery = {};
+                persistentUserQuery[options.emailFieldName] = tempUserData[options.emailFieldName];
+                User.findOne(query, function(err, existingPersistentUser) {
                     if (err) {
-                        return callback(err, null);
+                        return callback(err, null, null);
                     }
 
-                    TempUser.remove(query, function(err) {
-                        if (err) {
-                            return callback(err, null);
-                        }
+                    // user has already signed up and confirmed their account
+                    if (existingPersistentUser) {
+                        TempUser.remove(query, function(err) {
+                            if (err) {
+                                return callback(err, null);
+                            }
+                            return callback(null, existingPersistentUser);
+                        });
+                    } else {
+                        delete userData[options.URLFieldName];
+                        user = new User(userData);
 
-                        if (options.shouldSendConfirmation) {
-                            sendConfirmationEmail(savedUser[options.emailFieldName], null);
-                        }
-                        return callback(null, user);
-                    });
+                        // save the temporary user to the persistent user collection
+                        user.save(function(err, savedUser) {
+                            if (err) {
+                                return callback(err, null);
+                            }
+
+                            TempUser.remove(query, function(err) {
+                                if (err) {
+                                    return callback(err, null);
+                                }
+
+                                if (options.shouldSendConfirmation) {
+                                    sendConfirmationEmail(savedUser[options.emailFieldName], null);
+                                }
+                                return callback(null, user);
+                            });
+                        });
+                    }
                 });
-
 
                 // temp user is not found (i.e. user accessed URL after data expired, or something else...)
             } else {

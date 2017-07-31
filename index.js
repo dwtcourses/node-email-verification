@@ -48,7 +48,9 @@ module.exports = function(mongoose) {
         tempUserModel: null,
         tempUserCollection: 'temporary_users',
         emailFieldName: 'email',
+        usernameFieldName: 'username',
         passwordFieldName: 'password',
+        emailAndUsernameUnique: false,
         URLFieldName: 'GENERATED_VERIFYING_URL',
         expirationTime: 86400,
 
@@ -253,6 +255,18 @@ module.exports = function(mongoose) {
             }
 
             queryObj = userObj;
+        } else if(options.emailAndUsernameUnique){
+            var subQuery1 = {},
+                subQuery2 = {};
+            subQuery1[options.usernameFieldName] = user[options.usernameFieldName];
+            subQuery2[options.emailFieldName] = user[options.emailFieldName];
+            
+            query = {
+                $or: [
+                    subQuery1, 
+                    subQuery2
+                ]
+            }
         } else {
             query[options.emailFieldName] = user[options.emailFieldName];
         }

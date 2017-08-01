@@ -272,16 +272,14 @@ module.exports = function(mongoose) {
         }
 
         options.persistentUserModel.findOne(query, function(err, existingPersistentUser) {
-            if (err) {
-                return callback(err, null, null);
-            }
-
             // user has already signed up and confirmed their account
             if (existingPersistentUser) {
                 if (existingPersistentUser[options.emailFieldName] === query[options.emailFieldName]) {
                     return callback("Sorry but a user with email already exists", existingPersistentUser, null);
                 }
                 return callback("Sorry but that username is already taken", existingPersistentUser, null);
+            } else if (err) {
+                return callback(err, null, null);
             }
 
             options.tempUserModel.findOne(query, function(err, existingTempUser) {

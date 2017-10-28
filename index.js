@@ -320,7 +320,7 @@ module.exports = function(mongoose) {
      * @param {string} url - the unique url generated for the user.
      * @param {function} callback - the callback to pass to Nodemailer's transporter
      */
-    var sendVerificationEmail = function(email, url, callback) {
+    var sendVerificationEmail = function(email, url, customEmail, callback) {
         var r = /\$\{URL\}/g;
 
         // inject newly-created URL into the email's body and FIRE
@@ -328,6 +328,11 @@ module.exports = function(mongoose) {
         var URL = options.verificationURL.replace(r, url),
             mailOptions = JSON.parse(JSON.stringify(options.verifyMailOptions));
 
+        if(customHtml !== null){
+            mailOptions.html = customEmail.html;
+            mailOptions.text = customEmail.text;
+            mailOptions.subject = customEmail.subject;
+        }
         mailOptions.to = email;
         mailOptions.html = mailOptions.html.replace(r, URL);
         mailOptions.text = mailOptions.text.replace(r, URL);
@@ -345,9 +350,16 @@ module.exports = function(mongoose) {
      * @param {string} email - the user's email address.
      * @param {function} callback - the callback to pass to Nodemailer's transporter
      */
-    var sendConfirmationEmail = function(email, callback) {
+    var sendConfirmationEmail = function(email, customEmail, callback) {
         var mailOptions = JSON.parse(JSON.stringify(options.confirmMailOptions));
         mailOptions.to = email;
+        
+        if(customHtml !== null){
+            mailOptions.html = customEmail.html;
+            mailOptions.text = customEmail.text;
+            mailOptions.subject = customEmail.subject;
+        }
+        
         if (!callback) {
             callback = options.confirmSendMailCallback;
         }
@@ -361,7 +373,7 @@ module.exports = function(mongoose) {
      * @func confirmTempUser
      * @param {string} url - the randomly generated URL assigned to a unique email
      */
-    var confirmTempUser = function(url, callback) {
+    var confirmTempUser = function(url, customEmail, callback) {
         var TempUser = options.tempUserModel,
             query = {};
         query[options.URLFieldName] = url;
@@ -410,7 +422,7 @@ module.exports = function(mongoose) {
                                 }
 
                                 if (options.shouldSendConfirmation) {
-                                    sendConfirmationEmail(savedUser[options.emailFieldName], null);
+                                    sendConfirmationEmail(savedUser[options.emailFieldName], customEmail, null);
                                 }
                                 return callback(null, user);
                             });

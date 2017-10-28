@@ -444,7 +444,7 @@ module.exports = function(mongoose) {
      * @func resendVerificationEmail
      * @param {object} email - the user's email address
      */
-    var resendVerificationEmail = function(email, callback) {
+    var resendVerificationEmail = function(email, customEmail, callback) {
         var query = {};
         query[options.emailFieldName] = email;
 
@@ -462,7 +462,7 @@ module.exports = function(mongoose) {
                         return callback(err, null);
                     }
 
-                    sendVerificationEmail(getNestedValue(tempUser, options.emailFieldName), tempUser[options.URLFieldName], function(err) {
+                    sendVerificationEmail(getNestedValue(tempUser, options.emailFieldName), tempUser[options.URLFieldName], customEmail, function(err) {
                         if (err) {
                             return callback(err, null);
                         }

@@ -354,7 +354,7 @@ module.exports = function(mongoose) {
         var mailOptions = JSON.parse(JSON.stringify(options.confirmMailOptions));
         mailOptions.to = email;
         
-        if(customHtml !== null){
+        if(customEmail !== null){
             mailOptions.html = customEmail.html;
             mailOptions.text = customEmail.text;
             mailOptions.subject = customEmail.subject;
